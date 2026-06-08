@@ -1,0 +1,314 @@
+@import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --beast-primary: #ff4500; /* Fire Orange Red */
+  --beast-secondary: #ff0055; /* Beast Pink Red */
+  --beast-accent: #00ffd5; /* Cyber Neon Cyan */
+  --beast-glow: 0 0 15px rgba(255, 69, 0, 0.6);
+  --cyan-glow: 0 0 15px rgba(0, 255, 213, 0.6);
+  
+  --bg-cyber: #05050a; /* Cyber Dark */
+  --bg-gradient: radial-gradient(circle at top, #140d1a 0%, #05050a 100%);
+  --panel-dark: rgba(13, 13, 23, 0.85);
+  --panel-border: rgba(255, 69, 0, 0.15);
+  
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  --font-beast: 'Syncopate', sans-serif;
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.5s ease;
+}
+
+/* Beast Mode Fully Activated Styling Overrides */
+body.beast-mode-active {
+  background: radial-gradient(circle at center, #1a0202 0%, #020202 100%), 
+              repeating-linear-gradient(45deg, rgba(255, 0, 0, 0.05) 0px, rgba(255, 0, 0, 0.05) 2px, transparent 2px, transparent 10px);
+  --beast-primary: #ff1a00;
+  --beast-secondary: #cc0000;
+  --beast-glow: 0 0 25px rgba(255, 26, 0, 0.8);
+  --panel-dark: rgba(20, 5, 5, 0.95);
+  --panel-border: rgba(255, 0, 0, 0.4);
+  animation: bgPulseRed 2.5s infinite alternate;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.beast-title {
+  font-family: var(--font-beast);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: var(--beast-glow);
+  background: linear-gradient(135deg, var(--beast-primary) 0%, var(--beast-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-top: 0.6rem;
+  line-height: 1.25;
+  display: block;
+}
+
+.glass-panel {
+  background: var(--panel-dark);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--beast-primary), transparent);
+  opacity: 0.5;
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 69, 0, 0.4);
+  box-shadow: 0 12px 40px 0 rgba(255, 69, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+body.beast-mode-active .glass-panel {
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.15);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+  gap: 0.6rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--beast-primary) 0%, var(--beast-secondary) 100%);
+  color: #fff;
+  box-shadow: var(--beast-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 25px rgba(255, 69, 0, 0.8);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #fff;
+  border: 2px solid var(--beast-primary);
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 69, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.input-field {
+  width: 100%;
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  background: rgba(6, 6, 10, 0.9);
+  border: 1px solid rgba(255, 69, 0, 0.3);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--beast-accent);
+  box-shadow: var(--cyan-glow);
+}
+
+.page-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  padding-bottom: 6.5rem;
+  min-height: 100vh;
+}
+
+/* Stickers */
+.sticker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255, 69, 0, 0.15);
+  border: 1px solid var(--beast-primary);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--beast-primary);
+  box-shadow: 0 0 8px rgba(255, 69, 0, 0.2);
+}
+
+.sticker.cyan {
+  background: rgba(0, 255, 213, 0.15);
+  border-color: var(--beast-accent);
+  color: var(--beast-accent);
+}
+
+/* Animations */
+@keyframes bgPulseRed {
+  0% { box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.9), 0 0 20px rgba(255, 0, 0, 0.1); }
+  100% { box-shadow: inset 0 0 80px rgba(255, 0, 0, 0.1), 0 0 30px rgba(255, 0, 0, 0.2); }
+}
+
+@keyframes intenseBeastShake {
+  0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  10% { transform: translate(-4px, 4px) rotate(-1deg) scale(1.02); }
+  20% { transform: translate(4px, -2px) rotate(1deg) scale(0.99); }
+  30% { transform: translate(-5px, -3px) rotate(-1.5deg) scale(1.03); }
+  40% { transform: translate(5px, 3px) rotate(1.5deg) scale(0.98); }
+  50% { transform: translate(-4px, 5px) rotate(-1deg) scale(1.04); }
+  60% { transform: translate(4px, -4px) rotate(1deg) scale(0.97); }
+  70% { transform: translate(-5px, 2px) rotate(-1.5deg) scale(1.03); }
+  80% { transform: translate(5px, -3px) rotate(1.5deg) scale(0.98); }
+  90% { transform: translate(-3px, 4px) rotate(-1deg) scale(1.02); }
+  100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+}
+
+.countdown-shake {
+  animation: intenseBeastShake 0.15s infinite;
+  filter: hue-rotate(15deg) saturate(1.5);
+}
+
+/* SVG Person Gym Exercise Animations */
+@keyframes pressArmMove {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
+}
+.activePress .pressArm {
+  animation: pressArmMove 1.2s infinite ease-in-out;
+}
+.activePress .pressBarbell {
+  animation: pressArmMove 1.2s infinite ease-in-out;
+}
+
+@keyframes squatLegsBend {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(14px) scaleY(0.7); }
+}
+@keyframes squatTorsoMove {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(14px); }
+}
+.activeSquat .squatLegs {
+  transform-origin: 50px 85px;
+  animation: squatLegsBend 1.4s infinite ease-in-out;
+}
+.activeSquat .squatTorso {
+  animation: squatTorsoMove 1.4s infinite ease-in-out;
+}
+.activeSquat .squatBarbell {
+  animation: squatTorsoMove 1.4s infinite ease-in-out;
+}
+
+@keyframes curlForearmRotate {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-80deg); }
+}
+.activeCurl .curlForearm {
+  transform-origin: 45px 65px;
+  animation: curlForearmRotate 1s infinite ease-in-out;
+}
+.activeCurl .curlWeight {
+  transform-origin: 45px 65px;
+  animation: curlForearmRotate 1s infinite ease-in-out;
+}
+
+@keyframes deadliftBendBack {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(35deg); }
+}
+@keyframes deadliftWeightsMove {
+  0%, 100% { transform: translateY(-12px); }
+  50% { transform: translateY(10px); }
+}
+.activeDeadlift .deadliftTorso {
+  transform-origin: 40px 75px;
+  animation: deadliftBendBack 1.5s infinite ease-in-out;
+}
+.activeDeadlift .deadliftBarbell {
+  animation: deadliftWeightsMove 1.5s infinite ease-in-out;
+}
+
+@keyframes latPullArmsMove {
+  0%, 100% { transform: translateY(-15px); }
+  50% { transform: translateY(8px); }
+}
+.activePull .latArms {
+  animation: latPullArmsMove 1.3s infinite ease-in-out;
+}
+.activePull .latBar {
+  animation: latPullArmsMove 1.3s infinite ease-in-out;
+}
+
+@keyframes flyPulsingWings {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(0.4); }
+}
+.activeFly .flyWings {
+  transform-origin: 50px 50px;
+  animation: flyPulsingWings 1.1s infinite ease-in-out;
+}
+
+/* Glowing Muscle Highlight Animations */
+@keyframes musclePulse {
+  0%, 100% { opacity: 0.5; filter: drop-shadow(0 0 1px var(--beast-primary)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 6px var(--beast-primary)); }
+}
+
+.muscleGlow {
+  animation: musclePulse 1.2s infinite ease-in-out;
+}

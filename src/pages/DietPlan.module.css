@@ -1,0 +1,360 @@
+.dietPage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.targetsCard {
+  border-left: 4px solid var(--beast-primary);
+}
+
+.targetsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.targetsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.metricLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+}
+
+.metricVal {
+  font-family: var(--font-beast);
+  font-size: 0.9rem;
+  color: var(--beast-accent);
+}
+
+.macroContent {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.chartWrapper {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.chartCenter {
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.chartCenter span {
+  font-family: var(--font-beast);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--text-main);
+}
+
+.chartCenter small {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.macroList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex-grow: 1;
+}
+
+.macroItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.macroDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.macroText {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.macroName {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.macroValue {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--text-main);
+}
+
+/* Natural Language Parser Card */
+.naturalParserCard {
+  border-color: var(--beast-accent);
+}
+
+.parserHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.parserHeader h3 {
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--beast-accent);
+}
+
+.parserForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.parserControls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.parserControls select {
+  flex: 1;
+}
+
+.parserControls button {
+  flex: 1;
+  padding: 0.9rem;
+}
+
+/* Custom manual logging form */
+.customForm {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  border-color: var(--beast-primary);
+}
+
+.customForm h3 {
+  font-size: 0.9rem;
+  color: var(--beast-primary);
+  margin-bottom: 0.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.goalSuggestions {
+  width: calc(100% + 3rem);
+  margin-left: -1.5rem;
+  margin-right: -1.5rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  overflow: hidden;
+}
+
+.goalSuggestions h3 {
+  font-size: 0.90rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
+
+.goalTabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.goalTabs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.goalTabs::-webkit-scrollbar-track {
+  background: rgba(255, 69, 0, 0.05);
+}
+
+.goalTabs::-webkit-scrollbar-thumb {
+  background: var(--beast-primary);
+  border-radius: 2px;
+}
+
+.tab {
+  flex: 1;
+  background: var(--panel-dark);
+  border: 1px solid rgba(255, 69, 0, 0.2);
+  color: var(--text-muted);
+  padding: 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activeTab {
+  background: var(--beast-primary);
+  color: #fff;
+  border-color: var(--beast-primary);
+  box-shadow: var(--beast-glow);
+}
+
+.suggestList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.presetCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border: 1px solid rgba(255, 69, 0, 0.1);
+}
+
+.presetCard:hover {
+  border-color: var(--beast-primary);
+}
+
+.presetMeta h4 {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.presetMeta p {
+  font-size: 0.7rem;
+}
+
+.presetAction {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.calBadge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  background: rgba(255, 69, 0, 0.15);
+  border: 1px solid var(--beast-primary);
+  color: var(--beast-primary);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.quickAddBtn {
+  width: 24px;
+  height: 24px;
+  background: var(--beast-primary);
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Logged Meals List */
+.mealList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mealCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--beast-secondary);
+}
+
+.mealDetails h4 {
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.mealDetails p {
+  font-size: 0.7rem;
+}
+
+.mealTimeTag {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--beast-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.mealAction {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.calText {
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: var(--beast-secondary);
+}
+
+.deleteBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.deleteBtn:hover {
+  color: var(--beast-secondary);
+}
+
+.emptyMsg {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+.loggedSection h3 {
+  font-size: 0.90rem;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+}
