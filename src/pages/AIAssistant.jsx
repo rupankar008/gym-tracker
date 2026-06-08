@@ -40,7 +40,7 @@ const AIAssistant = () => {
         throw new Error("Missing API Key");
       }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
       const prompt = `
       You are an intense, highly knowledgeable Indian fitness expert and AI Gym Coach named 'Titan'. 
