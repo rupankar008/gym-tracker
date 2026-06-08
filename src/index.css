@@ -312,3 +312,40 @@ body.beast-mode-active .glass-panel {
 .muscleGlow {
   animation: musclePulse 1.2s infinite ease-in-out;
 }
+
+/* TOAST NOTIFICATION */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: rgba(10, 10, 15, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--beast-primary);
+  box-shadow: 0 4px 30px rgba(255, 69, 0, 0.4);
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-md);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  max-width: 90%;
+  width: max-content;
+  opacity: 0;
+  transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast-notification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  color: var(--beast-primary);
+  flex-shrink: 0;
+}

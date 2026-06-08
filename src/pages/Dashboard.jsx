@@ -82,16 +82,52 @@ const Dashboard = () => {
       <section className={`glass-panel ${styles.profileParamsPanel}`}>
         <div className={styles.paramsGrid}>
           <div>
-            <span className={styles.paramLabel}>WEIGHT</span>
-            <span className={styles.paramVal}>{user?.weight} kg</span>
+            <span className={styles.paramLabel}>CURRENT WEIGHT</span>
+            <div className={styles.paramVal} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <input 
+                type="number" 
+                value={user?.weight || ''} 
+                onChange={(e) => updateUser({ weight: e.target.value })}
+                style={{ background: 'transparent', border: 'none', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'bold', outline: 'none', width: '50px' }}
+              /> kg
+            </div>
           </div>
           <div>
-            <span className={styles.paramLabel}>HEIGHT</span>
-            <span className={styles.paramVal}>{user?.height} cm</span>
+            <span className={styles.paramLabel}>TARGET WEIGHT</span>
+            <div className={styles.paramVal} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <input 
+                type="number" 
+                value={user?.targetWeight || ''} 
+                onChange={(e) => updateUser({ targetWeight: e.target.value })}
+                placeholder="-"
+                style={{ background: 'transparent', border: 'none', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'bold', outline: 'none', width: '50px' }}
+              /> kg
+            </div>
           </div>
           <div>
-            <span className={styles.paramLabel}>GOAL</span>
-            <span className={styles.paramVal} style={{ color: 'var(--beast-primary)' }}>{user?.goal?.toUpperCase()}</span>
+            <span className={styles.paramLabel}>MISSION / GOAL</span>
+            <select 
+              className={styles.paramVal}
+              value={user?.goal || 'bulking'}
+              onChange={(e) => updateUser({ goal: e.target.value })}
+              style={{ color: 'var(--beast-primary)', background: 'transparent', border: 'none', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'bold', outline: 'none', cursor: 'pointer', appearance: 'none' }}
+            >
+              <option value="bulking" style={{background: '#111'}}>BULKING</option>
+              <option value="cutting" style={{background: '#111'}}>CUTTING</option>
+              <option value="maintaining" style={{background: '#111'}}>MAINTAINING</option>
+            </select>
+          </div>
+          <div>
+            <span className={styles.paramLabel}>CUSTOM CALORIES</span>
+            <div className={styles.paramVal} style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <input 
+                type="number" 
+                value={user?.customCalories || ''} 
+                onChange={(e) => updateUser({ customCalories: e.target.value })}
+                placeholder={targets.calories.toString()}
+                style={{ background: 'transparent', border: 'none', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'bold', outline: 'none', width: '60px' }}
+              /> kcal
+            </div>
           </div>
           <div>
             <span className={styles.paramLabel}>GYM TIME</span>
@@ -101,16 +137,7 @@ const Dashboard = () => {
                 type="time" 
                 value={user?.gymTime || '18:00'} 
                 onChange={(e) => updateUser({ gymTime: e.target.value })}
-                style={{ 
-                  background: 'transparent', 
-                  border: 'none', 
-                  color: 'inherit', 
-                  fontFamily: 'inherit',
-                  fontSize: 'inherit',
-                  fontWeight: 'bold',
-                  outline: 'none',
-                  cursor: 'pointer'
-                }}
+                style={{ background: 'transparent', border: 'none', color: 'inherit', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'bold', outline: 'none', cursor: 'pointer' }}
               />
             </div>
           </div>

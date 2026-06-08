@@ -179,7 +179,15 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateUser = (newFields) => {
-    setUser(prev => ({ ...prev, ...newFields }));
+    setUser(prev => {
+      const updated = { ...prev, ...newFields };
+      if (updated.uid) {
+        import('../utils/storage').then(({ db, setDoc, doc }) => {
+          setDoc(doc(db, "users", updated.uid), updated, { merge: true });
+        }).catch(err => console.error("Failed to sync profile:", err));
+      }
+      return updated;
+    });
   };
 
   const logout = () => {
@@ -286,28 +294,35 @@ export const AppProvider = ({ children }) => {
     
     const tdee = Math.round(bmr * 1.55);
     
+    let targetCal = tdee;
+    if (user.goal === 'bulking') targetCal = tdee + 400;
+    if (user.goal === 'cutting') targetCal = tdee - 500;
+    
+    // Override if custom calories are set
+    if (user.customCalories) {
+      targetCal = parseInt(user.customCalories);
+    }
+    
     if (user.goal === 'bulking') {
-      const bulkCal = tdee + 400;
       return {
-        calories: bulkCal,
+        calories: targetCal,
         protein: Math.round(weight * 2.2),
-        carbs: Math.round((bulkCal * 0.5) / 4),
-        fats: Math.round((bulkCal * 0.25) / 9)
+        carbs: Math.round((targetCal * 0.5) / 4),
+        fats: Math.round((targetCal * 0.25) / 9)
       };
     } else if (user.goal === 'cutting') {
-      const cutCal = tdee - 500;
       return {
-        calories: cutCal,
+        calories: targetCal,
         protein: Math.round(weight * 2.5),
-        carbs: Math.round((cutCal * 0.35) / 4),
-        fats: Math.round((cutCal * 0.25) / 9)
+        carbs: Math.round((targetCal * 0.35) / 4),
+        fats: Math.round((targetCal * 0.25) / 9)
       };
     } else {
       return {
-        calories: tdee,
+        calories: targetCal,
         protein: Math.round(weight * 2.0),
-        carbs: Math.round((tdee * 0.45) / 4),
-        fats: Math.round((tdee * 0.25) / 9)
+        carbs: Math.round((targetCal * 0.45) / 4),
+        fats: Math.round((targetCal * 0.25) / 9)
       };
     }
   };

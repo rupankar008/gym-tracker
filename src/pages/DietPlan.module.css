@@ -260,6 +260,17 @@
 
 .presetMeta p {
   font-size: 0.7rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-top: 0;
+}
+
+.presetCard:hover .presetMeta p {
+  max-height: 20px;
+  opacity: 1;
+  margin-top: 0.25rem;
 }
 
 .presetAction {
