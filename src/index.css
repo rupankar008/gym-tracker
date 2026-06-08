@@ -66,15 +66,17 @@ h1, h2, h3 {
 .beast-title {
   font-family: var(--font-beast);
   font-weight: 700;
+  font-size: clamp(1.4rem, 6vw, 2rem);
   letter-spacing: 0.05em;
   text-transform: uppercase;
   text-shadow: var(--beast-glow);
   background: linear-gradient(135deg, var(--beast-primary) 0%, var(--beast-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-top: 0.6rem;
-  line-height: 1.25;
+  margin-top: 0.4rem;
+  line-height: 1.2;
   display: block;
+  word-break: break-word;
 }
 
 .glass-panel {
@@ -84,10 +86,12 @@ h1, h2, h3 {
   border: 1px solid var(--panel-border);
   border-radius: var(--radius-md);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
-  padding: 1.5rem;
+  padding: 1.25rem;
   position: relative;
   overflow: hidden;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .glass-panel::before {
@@ -172,10 +176,13 @@ body.beast-mode-active .glass-panel {
 
 .page-container {
   max-width: 500px;
+  width: 100%;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.25rem;
   padding-bottom: 6.5rem;
   min-height: 100vh;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* Stickers */
