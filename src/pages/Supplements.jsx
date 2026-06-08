@@ -217,9 +217,15 @@ Athlete Profile:
               </p>
             </div>
           </div>
-          <button className="btn btn-primary" style={{ marginTop: '0.75rem', width: '100%' }} onClick={requestNotifications}>
-            <Bell size={16} /> ENABLE NOTIFICATIONS
-          </button>
+          {notifSupported ? (
+            <button className="btn btn-primary" style={{ marginTop: '0.75rem', width: '100%' }} onClick={requestNotifications}>
+              <Bell size={16} /> ENABLE NOTIFICATIONS
+            </button>
+          ) : (
+            <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--beast-accent)', padding: '0.5rem', background: 'rgba(255,69,0,0.1)', borderRadius: '4px', textAlign: 'center', fontWeight: 'bold' }}>
+              ⚠️ iOS Users: To enable notifications, tap the Share icon below and select "Add to Home Screen".
+            </div>
+          )}
         </section>
       )}
 
