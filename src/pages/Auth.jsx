@@ -29,7 +29,7 @@ const Auth = () => {
           setErrorMsg("FILL IN ALL FIELDS, WARRIOR!");
           return;
         }
-        const profile = await registerUser(name, username, password, gymTime);
+        const profile = await registerUser(name, username, password, gymTime, age, height, weight, gender, goal, diet);
         const data = {
           completedWorkouts: {},
           streak: 0,
@@ -39,14 +39,14 @@ const Auth = () => {
           age, height, weight, gender, goal, diet
         };
         // Simple context integration for now
-        login({ ...profile, age, height, weight, gender, goal, diet, username });
+        login({ ...profile, age, height, weight, gender, goal, diet, username }, data);
       } else {
         if (!username || !password) {
           setErrorMsg("ENTER USERNAME AND PASSWORD!");
           return;
         }
         const result = await loginUser(username, password);
-        login({ ...result.profile, username, streak: result.data.streak });
+        login({ ...result.profile, username }, result.data);
       }
     } catch (err) {
       setErrorMsg(err.message);

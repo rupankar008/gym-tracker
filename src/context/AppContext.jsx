@@ -168,8 +168,14 @@ export const AppProvider = ({ children }) => {
     };
   };
 
-  const login = (userData) => {
+  const login = (userData, backendData = null) => {
     setUser(userData);
+    if (backendData) {
+      if (backendData.streak !== undefined) setStreak(backendData.streak);
+      if (backendData.completedWorkouts) setCompletedWorkouts(backendData.completedWorkouts);
+      if (backendData.water !== undefined) setWater(backendData.water);
+      if (backendData.meals) setMeals(backendData.meals);
+    }
   };
 
   const updateUser = (newFields) => {
