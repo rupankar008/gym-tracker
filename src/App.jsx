@@ -56,7 +56,7 @@ function AppContent() {
 
   return (
     <Router>
-      <div className={`app-container ${beastMode ? 'beast-shake' : ''}`}>
+      <div className="app-container">
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
