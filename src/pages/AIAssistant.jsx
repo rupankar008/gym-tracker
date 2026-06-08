@@ -1,7 +1,12 @@
 import { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../context/AppContext';
 import { Bot, Send, Flame } from 'lucide-react';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import styles from './AIAssistant.module.css';
+
+// Initialize Gemini API
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "API_KEY_MISSING";
+const genAI = new GoogleGenerativeAI(API_KEY);
 
 const AIAssistant = () => {
   const { user, chatHistory, setChatHistory, meals, targets, water, streak } = useContext(AppContext);
@@ -22,7 +27,7 @@ const AIAssistant = () => {
   const consumedCarbs = meals.reduce((sum, m) => sum + (parseFloat(m.carbs) || 0), 0);
   const consumedFats = meals.reduce((sum, m) => sum + (parseFloat(m.fats) || 0), 0);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
     
     const userMsg = { id: Date.now(), sender: 'user', text: input };
@@ -30,100 +35,43 @@ const AIAssistant = () => {
     setInput('');
     setIsTyping(true);
 
-    // Hardcore personalized AI response engine
-    setTimeout(() => {
-      let reply = '';
-      const textLower = input.toLowerCase();
-      const goalStr = user?.goal || 'bulking';
-      const weightStr = user?.weight || '70';
-      const dietStr = user?.diet || 'non-veg';
-      const name = user?.name || 'Warrior';
-      const gymTimeStr = user?.gymTime || '06:00 PM';
-
-      // 1. Gym Timing & Pre-Workout Queries
-      if (textLower.includes('time') || textLower.includes('schedule') || textLower.includes('pre-workout') || textLower.includes('preworkout')) {
-        let preWorkoutTime = '1.5 hours prior';
-        if (gymTimeStr && gymTimeStr.includes(':')) {
-          const [h, m] = gymTimeStr.split(':').map(Number);
-          let date = new Date();
-          date.setHours(h, m, 0);
-          date.setMinutes(date.getMinutes() - 90); // 1.5 hours before
-          preWorkoutTime = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        }
-
-        reply = `GYM TIMING STRATEGY INITIATED, ${name.toUpperCase()}! 
-- YOUR REGISTERED LIFT TIME IS: ${gymTimeStr}.
-- PRE-WORKOUT WINDOW: ${preWorkoutTime}.
-- PRE-WORKOUT SUGGESTION: 
-  * Veg: 1 Black Coffee + 1 Banana with 1 tbsp Peanut Butter.
-  * Non-Veg: 3 Boiled Egg Whites + 1 Sweet Potato.
-  * Vegan: Oats with Soy Milk & Berries.
-- CRITICAL TIP: Sip 500ml water during your session to avoid cramping!`;
-      } 
-      // 2. High Protein Indian Recipes
-      else if (textLower.includes('recipe') || textLower.includes('cook') || textLower.includes('make')) {
-        if (textLower.includes('paneer')) {
-          reply = `HIGH-PROTEIN PANEER TIKKA RECIPE (28g Protein):
-1. Cut 150g Low-Fat Paneer, Bell Peppers, and Onions into cubes.
-2. Marinate with 3 tbsp Curd, 1 tsp Ginger-Garlic paste, Red Chilli powder, Turmeric, and Garam Masala.
-3. Keep marinated for 30 minutes.
-4. Roast on a non-stick pan with 1 tsp Olive Oil until golden brown.
-5. Squeeze fresh lemon juice. CRUSH IT!`;
-        } else if (textLower.includes('chicken')) {
-          reply = `LEAN CHICKEN SALAD RECIPE (42g Protein):
-1. Boil 150g Chicken Breast with salt and pepper. Shred it.
-2. Toss in a bowl with chopped Cucumbers, Tomatoes, Lettuce, and Coriander.
-3. Dressing: 1 tbsp Olive Oil, Lemon juice, and a pinch of rock salt.
-4. Add 10g roasted almonds for healthy fats. FUEL FOR THE BEAST!`;
-        } else if (textLower.includes('soya') || textLower.includes('soy')) {
-          reply = `SOYA CHUNKS SCRAMBLE/BHURJI RECIPE (35g Protein):
-1. Boil 60g Soya Chunks. Drain the water completely and mince them.
-2. Heat 1 tsp Mustard oil in a pan, add Cumin seeds, chopped Onions, Tomatoes, and Green Chillies.
-3. Sauté until soft, add turmeric, chilli powder, and coriander powder.
-4. Add the minced soya, scramble for 5 minutes. Eat hot with 1 Roti!`;
-        } else {
-          reply = `PROTEIN RECIPES DIRECTORY:
-I have custom Indian guides for:
-- [PANEER TIKKA] (Veg)
-- [CHICKEN SALAD] (Non-Veg)
-- [SOYA BHURJI] (Vegan/Veg)
-Just ask me: "give me a paneer recipe" or "how to cook soya"!`;
-        }
-      } 
-      // 3. Calories and Metrics Queries
-      else if (textLower.includes('calorie') || textLower.includes('kcal') || textLower.includes('eat') || textLower.includes('consumed')) {
-        reply = `STATS UPDATE, ${name.toUpperCase()}! TODAY YOU LOGGED ${consumedCalories} KCAL OUT OF YOUR ${targets.calories} KCAL TARGET. YOU HAVE ${Math.max(0, targets.calories - consumedCalories)} KCAL REMAINING TO REACH YOUR GOAL!`;
-      } 
-      else if (textLower.includes('protein') || textLower.includes('gram') || textLower.includes('macros')) {
-        reply = `MACROS SCORECARD, ${name.toUpperCase()}:\n- PROTEIN: ${consumedProtein}g / ${targets.protein}g Target\n- CARBS: ${consumedCarbs}g / ${targets.carbs}g Target\n- FATS: ${consumedFats}g / ${targets.fats}g Target\nKEEP EATING CLEAN AND HIT THESE TARGETS!`;
-      } 
-      else if (textLower.includes('water') || textLower.includes('drink') || textLower.includes('hydrate')) {
-        reply = `HYDRATION CHECK! YOU HAVE LOGGED ${water.toFixed(2)} LITERS OF WATER TODAY OUT OF YOUR 4.0L DAILY MINIMUM. KEEP CHUGGING!`;
-      } 
-      else if (textLower.includes('streak') || textLower.includes('day')) {
-        reply = `YOUR STREAK IS CURRENTLY AT ${streak} DAYS! CONSISTENCY IS KEY. DO NOT BREAK THE CHAIN!`;
-      } 
-      else if (textLower.includes('hello') || textLower.includes('hi') || textLower.includes('hey')) {
-        reply = `READY FOR ACTION, ${name.toUpperCase()}! HEIGHT: ${user?.height}CM | WEIGHT: ${weightStr}KG | TARGET: ${goalStr.toUpperCase()} | GYM WINDOW: ${gymTimeStr}. ASK ME ABOUT PRE-WORKOUT MEALS OR HIGH-PROTEIN INDIAN RECIPES!`;
-      } 
-      else if (textLower.includes('workout') || textLower.includes('routine') || textLower.includes('exercise') || textLower.includes('gym')) {
-        if (textLower.includes('chest') || textLower.includes('bench')) {
-          reply = `CHEST MATRIX ACTIVE! Barbell Bench Press (heavy 4x8), Incline Dumbbell Press (4x10), and Cable Crossovers. Squeeze at the top and push hard!`;
-        } else if (textLower.includes('back') || textLower.includes('deadlift')) {
-          reply = `BACK MATRIX ACTIVE! Conventional Deadlifts (4x5), Wide Lat Pulldowns (4x10), and Bent-Over Rows (3x8). Pull with your elbows!`;
-        } else if (textLower.includes('leg') || textLower.includes('squat')) {
-          reply = `LEG MATRIX ACTIVE! Squats (4x8), Leg Press (4x10), Lying Leg Curls, and Standing Calf Raises. Embrace the burn!`;
-        } else {
-          reply = `WORKOUT MATRIX ACTIVE. YOU ARE CURRENTLY ON A ${goalStr.toUpperCase()} PROTOCOL. HIT 4 CORE COMPOUND MOVEMENTS TODAY WITH 3-4 SETS OF 8-12 REPS. FORCE PROGRESSIVE OVERLOAD!`;
-        }
-      } 
-      else {
-        reply = `RECEIVED, WARRIOR. AS A ${weightStr}KG ATHLETE IN ${goalStr.toUpperCase()} MODE, TARGET CALORIES ARE ${targets.calories} KCAL. LOG EVERYTHING YOU CONSUME AND HIT YOUR TARGETS!`;
+    try {
+      if (API_KEY === "API_KEY_MISSING") {
+        throw new Error("Missing API Key");
       }
 
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+      const prompt = `
+      You are an intense, highly knowledgeable Indian fitness expert and AI Gym Coach named 'Titan'. 
+      You speak in an aggressive, motivating, caps-heavy tone (like a hardcore bodybuilder coach).
+      The user's name is ${user?.name || 'Warrior'}.
+      Their goal is ${user?.goal || 'bulking'}.
+      Their weight is ${user?.weight || '70'} kg.
+      Their gym time is ${user?.gymTime || '06:00 PM'}.
+      They have consumed ${consumedCalories} out of ${targets.calories} kcal today.
+      They have consumed ${consumedProtein}g out of ${targets.protein}g protein today.
+      They have consumed ${water.toFixed(2)}L out of 4.0L water today.
+      Their current streak is ${streak} days.
+      
+      User says: "${input}"
+      
+      Respond directly, intensely, and give factual, actionable fitness/nutrition advice based on their current stats. Keep it under 4-5 sentences. Do not use markdown like ** or ##, just use plain text with CAPS for emphasis.`;
+
+      const result = await model.generateContent(prompt);
+      const response = result.response;
+      let reply = response.text();
+      
+      // Clean up markdown just in case
+      reply = reply.replace(/\\*\\*/g, '').replace(/#/g, '');
+
       setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: reply }]);
+    } catch (error) {
+      console.error("AI Error:", error);
+      setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: "ERROR: MY NEURAL UPLINK IS DOWN. CHECK YOUR VITE_GEMINI_API_KEY IN .ENV!" }]);
+    } finally {
       setIsTyping(false);
-    }, 1200);
+    }
   };
 
   return (
