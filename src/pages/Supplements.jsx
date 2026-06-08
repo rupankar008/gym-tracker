@@ -7,6 +7,14 @@ import styles from './Supplements.module.css';
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
+// Safe notification permission check
+const getNotifPermission = () => {
+  try {
+    return typeof Notification !== 'undefined' ? Notification.permission : 'denied';
+  } catch { return 'denied'; }
+};
+const notifSupported = typeof Notification !== 'undefined';
+
 // All available supplement presets
 const SUPPLEMENT_PRESETS = [
   { name: 'Creatine Monohydrate', dose: '5g', timing: 'post-workout', icon: '💪', color: '#ff4500' },
@@ -59,16 +67,21 @@ const Supplements = () => {
   const [customTiming, setCustomTiming] = useState('morning');
   const [aiRec, setAiRec] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
-  const [notifGranted, setNotifGranted] = useState(Notification.permission === 'granted');
+  const [notifGranted, setNotifGranted] = useState(() => getNotifPermission() === 'granted');
 
   const requestNotifications = async () => {
-    const perm = await Notification.requestPermission();
-    setNotifGranted(perm === 'granted');
-    if (perm === 'granted') {
-      new Notification('TitanFit 🔥', {
-        body: 'Supplement reminders are now active! We will notify you when it\'s time to take your supplements.',
-        icon: '/favicon.ico'
-      });
+    if (!notifSupported) return;
+    try {
+      const perm = await Notification.requestPermission();
+      setNotifGranted(perm === 'granted');
+      if (perm === 'granted') {
+        new Notification('TitanFit 🔥', {
+          body: "Supplement reminders are now active!",
+          icon: '/favicon.ico'
+        });
+      }
+    } catch (e) {
+      console.error('Notification error:', e);
     }
   };
 
