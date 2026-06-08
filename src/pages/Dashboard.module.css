@@ -270,6 +270,7 @@
 @keyframes barSlide {
   0% { background-position: 200% 0; width: 100%; }
   100% { background-position: 0% 0; width: 100%; }
+}
 
 .quoteCard {
   cursor: pointer;
