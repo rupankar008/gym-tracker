@@ -18,7 +18,9 @@ const Auth = () => {
   const [gender, setGender] = useState('male');
   const [goal, setGoal] = useState('bulking');
   const [diet, setDiet] = useState('non-veg');
-  const [gymTime, setGymTime] = useState('06:00 PM');
+  const [gymTime, setGymTime] = useState('18:00');
+  const [experience, setExperience] = useState('beginner');
+  const [gymFrequency, setGymFrequency] = useState(3);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,10 +38,9 @@ const Auth = () => {
           lastLogin: new Date().toISOString(),
           history: {},
           ...profile,
-          age, height, weight, gender, goal, diet
+          age, height, weight, gender, goal, diet, experience, gymFrequency
         };
-        // Simple context integration for now
-        login({ ...profile, age, height, weight, gender, goal, diet, username }, data);
+        login({ ...profile, age, height, weight, gender, goal, diet, experience, gymFrequency, username }, data);
       } else {
         if (!username || !password) {
           setErrorMsg("ENTER USERNAME AND PASSWORD!");
@@ -217,6 +218,37 @@ const Auth = () => {
                       onClick={() => setDiet(d)}
                     >
                       {d.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className={styles.selectGroup}>
+                <label>EXPERIENCE LEVEL</label>
+                <div className={styles.radioGroup}>
+                  {['beginner', 'intermediate', 'pro'].map(lvl => (
+                    <button
+                      key={lvl}
+                      type="button"
+                      className={`${styles.selectBtn} ${experience === lvl ? styles.selected : ''}`}
+                      onClick={() => setExperience(lvl)}
+                    >
+                      {lvl.toUpperCase()}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className={styles.selectGroup}>
+                <label>GYM FREQUENCY (DAYS/WEEK)</label>
+                <div className={styles.radioGroup}>
+                  {[2, 3, 4, 5, 6].map(freq => (
+                    <button
+                      key={freq}
+                      type="button"
+                      className={`${styles.selectBtn} ${gymFrequency === freq ? styles.selected : ''}`}
+                      onClick={() => setGymFrequency(freq)}
+                    >
+                      {freq}x
                     </button>
                   ))}
                 </div>

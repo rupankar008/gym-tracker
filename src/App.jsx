@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import WorkoutPlanner from './pages/WorkoutPlanner';
 import DietPlan from './pages/DietPlan';
 import AIAssistant from './pages/AIAssistant';
+import Supplements from './pages/Supplements';
 import Auth from './pages/Auth';
 import ExerciseDetail from './pages/ExerciseDetail';
 import BottomNav from './components/BottomNav';
@@ -63,6 +64,7 @@ function AppContent() {
           <Route path="/exercise/:id" element={<ExerciseDetail />} />
           <Route path="/diet" element={<DietPlan />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
+          <Route path="/supplements" element={<Supplements />} />
         </Routes>
         <BottomNav />
         

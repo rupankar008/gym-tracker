@@ -68,6 +68,16 @@ export const AppProvider = ({ children }) => {
     ];
   });
 
+  const [supplements, setSupplements] = useState(() => {
+    const saved = localStorage.getItem('titan_supplements');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [supplementLog, setSupplementLog] = useState(() => {
+    const saved = localStorage.getItem('titan_supplement_log');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   const [beastMode, setBeastMode] = useState(false);
   const [beastTimerActive, setBeastTimerActive] = useState(false);
   const [beastCountdown, setBeastCountdown] = useState(5);
@@ -100,6 +110,14 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('titan_chat', JSON.stringify(chatHistory));
   }, [chatHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('titan_supplements', JSON.stringify(supplements));
+  }, [supplements]);
+
+  useEffect(() => {
+    localStorage.setItem('titan_supplement_log', JSON.stringify(supplementLog));
+  }, [supplementLog]);
 
   const triggerBeastMode = (active) => {
     if (active) {
@@ -208,6 +226,35 @@ export const AppProvider = ({ children }) => {
 
   const deleteMeal = (id) => {
     setMeals(prev => prev.filter(m => m.id !== id));
+  };
+
+  // --- Supplement Helpers ---
+  const addSupplement = (supp) => {
+    setSupplements(prev => [...prev, { ...supp, id: Date.now(), streak: 0 }]);
+  };
+
+  const deleteSupplement = (id) => {
+    setSupplements(prev => prev.filter(s => s.id !== id));
+  };
+
+  const toggleSupplementTaken = (suppId) => {
+    const today = new Date().toISOString().split('T')[0];
+    setSupplementLog(prev => {
+      const dayLog = prev[today] || {};
+      const isTaken = dayLog[suppId];
+      return { ...prev, [today]: { ...dayLog, [suppId]: !isTaken } };
+    });
+    // Update streak on supplement
+    setSupplements(prev => prev.map(s => {
+      if (s.id !== suppId) return s;
+      const today = new Date().toISOString().split('T')[0];
+      return { ...s, lastTaken: today, streak: (s.streak || 0) + 1 };
+    }));
+  };
+
+  const isSupplementTakenToday = (suppId) => {
+    const today = new Date().toISOString().split('T')[0];
+    return !!(supplementLog[today] && supplementLog[today][suppId]);
   };
 
   // Workout state tracking:
@@ -353,7 +400,12 @@ export const AppProvider = ({ children }) => {
       beastTimerActive,
       beastCountdown,
       triggerBeastMode,
-      parseFoodQuery
+      parseFoodQuery,
+      supplements,
+      addSupplement,
+      deleteSupplement,
+      toggleSupplementTaken,
+      isSupplementTakenToday,
     }}>
       {children}
     </AppContext.Provider>
