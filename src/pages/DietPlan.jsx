@@ -1,8 +1,13 @@
 import { useState, useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import { Target, Plus, Trash2, ShieldAlert, Sparkles } from 'lucide-react';
+import { Target, Plus, Trash2, ShieldAlert, Sparkles, Brain, Loader } from 'lucide-react';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import styles from './DietPlan.module.css';
+
+// Initialize Gemini for food analysis
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
 
 // Preset Indian Foods by Target Goal (Bulking, Cutting, Maintaining)
 const GOAL_FOOD_RECOMMENDATIONS = {
@@ -30,9 +35,12 @@ const GOAL_FOOD_RECOMMENDATIONS = {
 };
 
 const DietPlan = () => {
-  const { user, meals, addMeal, deleteMeal, targets, parseFoodQuery } = useContext(AppContext);
+  const { user, meals, addMeal, deleteMeal, targets } = useContext(AppContext);
   const [naturalText, setNaturalText] = useState('');
   const [activeGoalTab, setActiveGoalTab] = useState('bulking');
+  const [isParsing, setIsParsing] = useState(false);
+  const [parseResult, setParseResult] = useState(null);
+  const [parseError, setParseError] = useState('');
   
   // Custom manual states
   const [customName, setCustomName] = useState('');
@@ -55,11 +63,62 @@ const DietPlan = () => {
     { name: 'Fats', value: consumedFats || 1, color: 'var(--beast-primary)' },
   ];
 
-  const handleNaturalParse = (e) => {
+  const handleNaturalParse = async (e) => {
     e.preventDefault();
     if (!naturalText.trim()) return;
-    const parsedMeal = parseFoodQuery(naturalText, mealType);
-    addMeal(parsedMeal);
+    setIsParsing(true);
+    setParseResult(null);
+    setParseError('');
+
+    try {
+      if (!genAI) throw new Error('No API key');
+
+      const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' });
+
+      const prompt = `You are a highly accurate nutritional database for Indian and International foods.
+
+Analyze the following food item/meal and return ONLY a valid JSON object with these exact fields. No text before or after. No markdown code blocks. Just raw JSON.
+
+Food to analyze: "${naturalText}"
+
+Return this structure:
+{
+  "name": "Exact descriptive name with quantity",
+  "calories": <integer>,
+  "protein": <number with 1 decimal>,
+  "carbs": <number with 1 decimal>,
+  "fats": <number with 1 decimal>,
+  "fiber": <number with 1 decimal>,
+  "sugar": <number with 1 decimal>,
+  "confidence": "high" | "medium" | "low"
+}
+
+Rules:
+- Be extremely accurate. Use real nutritional database values.
+- If no quantity is given, assume a standard serving.
+- For Indian foods, use standard home-cooked recipe values.
+- The macros (protein*4 + carbs*4 + fats*9) should approximately equal calories.`;
+
+      const result = await model.generateContent(prompt);
+      let text = result.response.text().trim();
+
+      // Strip any markdown code fences if model still adds them
+      text = text.replace(/```json/gi, '').replace(/```/g, '').trim();
+
+      const parsed = JSON.parse(text);
+      setParseResult({ ...parsed, type: mealType });
+    } catch (error) {
+      console.error('Food parse error:', error);
+      setParseError('Could not analyze that food. Try being more specific (e.g. "200g boiled chicken breast").');
+    } finally {
+      setIsParsing(false);
+    }
+  };
+
+  const handleConfirmMeal = () => {
+    if (!parseResult) return;
+    addMeal(parseResult);
+    setParseResult(null);
     setNaturalText('');
   };
 
@@ -163,17 +222,17 @@ const DietPlan = () => {
       {/* Auto-Macros Natural Language Parser */}
       <section className={`glass-panel ${styles.naturalParserCard}`}>
         <div className={styles.parserHeader}>
-          <Sparkles size={20} color="var(--beast-accent)" />
-          <h3>AUTO-MACROS CALCULATOR</h3>
+          <Brain size={20} color="var(--beast-accent)" />
+          <h3>AI FOOD ANALYZER</h3>
         </div>
         <form onSubmit={handleNaturalParse} className={styles.parserForm}>
           <p className="text-muted" style={{ fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-            Type what you ate (e.g. "200g Paneer Rice" or "Chicken Roti") and we'll calculate it!
+            Type any food with quantity — AI will calculate the exact macros!
           </p>
           <input 
             type="text" 
             className="input-field" 
-            placeholder="e.g. 200g Paneer Rice..." 
+            placeholder="e.g. 200g paneer tikka, 1 cup oats with milk..." 
             value={naturalText}
             onChange={e => setNaturalText(e.target.value)}
             required
@@ -184,9 +243,53 @@ const DietPlan = () => {
                 <option key={t} value={t}>{t.toUpperCase()}</option>
               ))}
             </select>
-            <button type="submit" className="btn btn-primary">PARSE FUEL</button>
+            <button type="submit" className="btn btn-primary" disabled={isParsing}>
+              {isParsing ? <Loader size={16} className={styles.spinnerIcon} /> : <Sparkles size={16} />}
+              {isParsing ? 'ANALYZING...' : 'ANALYZE'}
+            </button>
           </div>
         </form>
+
+        {/* AI Result Preview */}
+        {parseError && (
+          <div style={{ marginTop: '0.75rem', padding: '0.75rem', background: 'rgba(255,0,85,0.1)', border: '1px solid var(--beast-secondary)', borderRadius: 'var(--radius-sm)', fontSize: '0.8rem', color: 'var(--beast-secondary)' }}>
+            ⚠️ {parseError}
+          </div>
+        )}
+        {parseResult && (
+          <div style={{ marginTop: '0.75rem', padding: '1rem', background: 'rgba(0,255,213,0.05)', border: '1px solid var(--beast-accent)', borderRadius: 'var(--radius-sm)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem' }}>
+              <div>
+                <div style={{ fontWeight: '800', fontSize: '0.9rem', marginBottom: '0.25rem' }}>{parseResult.name.toUpperCase()}</div>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Confidence: {parseResult.confidence}</div>
+              </div>
+              <span style={{ fontFamily: 'var(--font-beast)', fontSize: '1.1rem', color: 'var(--beast-primary)' }}>{parseResult.calories} kcal</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <div style={{ textAlign: 'center', padding: '0.4rem', background: 'rgba(255,0,85,0.1)', borderRadius: '6px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--beast-secondary)' }}>{parseResult.protein}g</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: '700' }}>PROTEIN</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '0.4rem', background: 'rgba(0,255,213,0.1)', borderRadius: '6px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--beast-accent)' }}>{parseResult.carbs}g</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: '700' }}>CARBS</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '0.4rem', background: 'rgba(255,69,0,0.1)', borderRadius: '6px' }}>
+                <div style={{ fontSize: '1rem', fontWeight: '800', color: 'var(--beast-primary)' }}>{parseResult.fats}g</div>
+                <div style={{ fontSize: '0.6rem', color: 'var(--text-muted)', fontWeight: '700' }}>FATS</div>
+              </div>
+            </div>
+            {(parseResult.fiber || parseResult.sugar) && (
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '0.75rem', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                {parseResult.fiber && <span>Fiber: {parseResult.fiber}g</span>}
+                {parseResult.sugar && <span>Sugar: {parseResult.sugar}g</span>}
+              </div>
+            )}
+            <button className="btn btn-primary" style={{ width: '100%', marginTop: '0.25rem' }} onClick={handleConfirmMeal}>
+              ✓ LOG THIS MEAL
+            </button>
+          </div>
+        )}
       </section>
 
       {/* Goal Suggestions Tabs */}
