@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { AppContext } from '../context/AppContext';
 import BodybuilderLogo from '../components/BodybuilderLogo';
-import { Flame, Trophy, Droplets, LogOut, Swords, Star, Dumbbell, Clock, Bell } from 'lucide-react';
+import { Flame, Trophy, Droplets, LogOut, Swords, Star, Dumbbell, Clock, Bell, Camera, Image as ImageIcon } from 'lucide-react';
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import styles from './Dashboard.module.css';
 
@@ -48,6 +48,39 @@ const Dashboard = () => {
 
   const consumedCalories = meals.reduce((sum, m) => sum + (parseFloat(m.calories) || 0), 0);
   
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 300;
+        const scaleSize = MAX_WIDTH / img.width;
+        canvas.width = MAX_WIDTH;
+        canvas.height = img.height * scaleSize;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.6); // aggressively compress
+        
+        const currentPhotos = user?.progressPhotos || [];
+        const newPhoto = {
+          id: Date.now(),
+          date: new Date().toLocaleDateString(),
+          url: dataUrl
+        };
+        
+        updateUser({ progressPhotos: [...currentPhotos, newPhoto] });
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const todayStr = new Date().toISOString().split('T')[0];
   const muscleVolume = getMuscleVolumeData(todayStr);
 
@@ -262,6 +295,39 @@ const Dashboard = () => {
             <span>Heavy Lifter</span>
           </div>
         </div>
+      </section>
+
+      {/* Photo Progress Timeline */}
+      <section className={`glass-panel ${styles.progressCard}`} style={{ borderLeft: '4px solid var(--beast-secondary)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+          <h3>PROGRESS TIMELINE</h3>
+          <label className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', fontSize: '0.8rem' }}>
+            <Camera size={16} style={{ marginRight: '0.25rem' }} /> UPLOAD
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} style={{ display: 'none' }} />
+          </label>
+        </div>
+        
+        {(!user?.progressPhotos || user.progressPhotos.length === 0) ? (
+          <div style={{ textAlign: 'center', padding: '2rem 0', color: 'var(--text-muted)' }}>
+            <ImageIcon size={40} style={{ opacity: 0.2, margin: '0 auto 1rem' }} />
+            <p style={{ fontSize: '0.9rem' }}>Upload your first physique update to start tracking visual progress!</p>
+          </div>
+        ) : (
+          <div className={styles.photoTimeline} style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            {user.progressPhotos.map((photo) => (
+              <div key={photo.id} style={{ flexShrink: 0, position: 'relative' }}>
+                <img 
+                  src={photo.url} 
+                  alt="Progress" 
+                  style={{ width: '120px', height: '160px', objectFit: 'cover', borderRadius: 'var(--radius-sm)', border: '1px solid var(--beast-secondary)' }}
+                />
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.7)', padding: '0.25rem', textAlign: 'center', fontSize: '0.7rem', fontWeight: 'bold' }}>
+                  {photo.date}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* Fuel Intake Chart */}

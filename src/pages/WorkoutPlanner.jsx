@@ -2,14 +2,28 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../context/AppContext';
 import { EXERCISE_LIBRARY } from '../data/exerciseLibrary';
-import { Play, Check, Plus, Search, Dumbbell, Award, Flame, ChevronLeft, ChevronRight, ChevronRightCircle } from 'lucide-react';
+import { Play, Check, Plus, Search, Dumbbell, Award, Flame, ChevronLeft, ChevronRight, ChevronRightCircle, Share2 } from 'lucide-react';
 import styles from './WorkoutPlanner.module.css';
 
 const WorkoutPlanner = () => {
   const navigate = useNavigate();
-  const { completedWorkouts, toggleExerciseSet, updateExerciseGoals, beastMode } = useContext(AppContext);
+  const { user, completedWorkouts, toggleExerciseSet, updateExerciseGoals, beastMode } = useContext(AppContext);
   const [activeCategory, setActiveCategory] = useState('Chest');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const handleShare = () => {
+    const url = `${window.location.origin}/workout?shared=${user?.name || 'titan'}`;
+    if (navigator.share) {
+      navigator.share({
+        title: 'My TitanFit Routine',
+        text: 'Check out my custom beast mode workout routine on TitanFit!',
+        url: url,
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(url);
+      alert("Workout link copied to clipboard!");
+    }
+  };
   
   // Custom exercise states
   const [customName, setCustomName] = useState('');
@@ -215,9 +229,14 @@ const WorkoutPlanner = () => {
           <span className="sticker cyan">BEAST ROUTINE MATRIX</span>
           <h1 className="beast-title">CHART WORKOUTS</h1>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowCustomForm(!showCustomForm)}>
-          <Plus size={20} />
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn btn-secondary" onClick={handleShare} style={{ padding: '0.6rem' }} title="Share Workout">
+            <Share2 size={20} />
+          </button>
+          <button className="btn btn-primary" onClick={() => setShowCustomForm(!showCustomForm)} style={{ padding: '0.6rem' }}>
+            <Plus size={20} />
+          </button>
+        </div>
       </header>
 
       {/* Custom Workout Form */}
