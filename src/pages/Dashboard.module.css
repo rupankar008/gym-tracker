@@ -112,85 +112,164 @@
 .beastModePanel {
   background: linear-gradient(135deg, rgba(13, 13, 23, 0.9) 0%, rgba(25, 10, 10, 0.9) 100%);
   border: 1px solid rgba(255, 69, 0, 0.2);
+  transition: all 0.5s ease;
 }
 
 .activeBeast {
   border-color: var(--beast-primary);
-  box-shadow: var(--beast-glow);
-  animation: glowPulse 1.5s infinite alternate;
+  box-shadow: 0 0 30px rgba(255, 69, 0, 0.2), inset 0 0 60px rgba(255, 69, 0, 0.04);
+  background: linear-gradient(135deg, rgba(30, 8, 0, 0.95) 0%, rgba(15, 5, 0, 0.95) 100%);
 }
 
-@keyframes glowPulse {
-  0% { box-shadow: 0 0 10px rgba(255, 69, 0, 0.4); }
-  100% { box-shadow: 0 0 20px rgba(255, 69, 0, 0.8); }
-}
-
-.beastToggleHeader {
+.beastHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1rem;
+}
+
+.beastTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .beastLabel {
+  font-family: var(--font-beast);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--beast-primary);
+  letter-spacing: 0.08em;
+}
+
+.beastSub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* ====== Premium Power Button ====== */
+.powerBtn {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 69, 0, 0.35);
+  background: radial-gradient(circle at center, rgba(255,69,0,0.12) 0%, rgba(0,0,0,0.4) 100%);
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 1rem;
-  color: var(--beast-primary);
+  justify-content: center;
+  transition: all 0.35s ease;
+  flex-shrink: 0;
+  overflow: visible;
 }
 
-.spinning {
-  animation: spin 3s linear infinite;
+.powerBtn:hover {
+  border-color: var(--beast-primary);
+  background: radial-gradient(circle at center, rgba(255,69,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255,69,0,0.3);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.powerOn {
+  border-color: var(--beast-primary);
+  background: radial-gradient(circle at center, rgba(255,69,0,0.25) 0%, rgba(50,10,0,0.8) 100%);
+  box-shadow: 0 0 25px rgba(255,69,0,0.5), inset 0 0 20px rgba(255,69,0,0.15);
+  animation: powerGlow 2s ease-in-out infinite alternate;
 }
 
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 50px;
-  height: 26px;
+@keyframes powerGlow {
+  from { box-shadow: 0 0 20px rgba(255,69,0,0.4), inset 0 0 15px rgba(255,69,0,0.1); }
+  to { box-shadow: 0 0 40px rgba(255,69,0,0.7), inset 0 0 25px rgba(255,69,0,0.2); }
 }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.powerArming {
+  border-color: rgba(255,170,0,0.8);
+  animation: armingPulse 0.5s ease-in-out infinite alternate;
+  cursor: not-allowed;
 }
 
-.slider {
+@keyframes armingPulse {
+  from { box-shadow: 0 0 10px rgba(255,170,0,0.3); }
+  to { box-shadow: 0 0 30px rgba(255,170,0,0.7); }
+}
+
+.powerPressed {
+  transform: scale(0.93) !important;
+  box-shadow: 0 0 60px rgba(255,69,0,0.9) !important;
+}
+
+/* Animated rings around the power button */
+.powerRing1,
+.powerRing2 {
   position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #333;
-  transition: .4s;
-  border-radius: 34px;
-}
-
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px;
-  width: 18px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  transition: .4s;
   border-radius: 50%;
+  border: 1px solid rgba(255, 69, 0, 0.3);
+  pointer-events: none;
 }
 
-input:checked + .slider {
-  background-color: var(--beast-primary);
+.powerRing1 {
+  width: 84px;
+  height: 84px;
+  opacity: 0;
 }
 
-input:checked + .slider:before {
-  transform: translateX(24px);
+.powerRing2 {
+  width: 108px;
+  height: 108px;
+  opacity: 0;
 }
+
+.powerOn .powerRing1 {
+  opacity: 1;
+  border-color: rgba(255, 69, 0, 0.25);
+  animation: ringPulse 2s ease-out infinite;
+}
+
+.powerOn .powerRing2 {
+  opacity: 1;
+  border-color: rgba(255, 69, 0, 0.12);
+  animation: ringPulse 2s ease-out infinite 0.5s;
+}
+
+@keyframes ringPulse {
+  0% { transform: scale(0.85); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 0; }
+}
+
+.powerIcon {
+  color: var(--beast-primary);
+  position: relative;
+  z-index: 1;
+  transition: all 0.35s ease;
+}
+
+.powerOn .powerIcon {
+  filter: drop-shadow(0 0 8px var(--beast-primary));
+}
+
+/* Active beast progress bar */
+.beastActiveBar {
+  margin-top: 1rem;
+  height: 3px;
+  background: rgba(255, 69, 0, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.beastActiveInner {
+  height: 100%;
+  background: linear-gradient(90deg, var(--beast-primary), #ff7700, var(--beast-primary));
+  background-size: 200% 100%;
+  animation: barSlide 2s linear infinite;
+  border-radius: 2px;
+}
+
+@keyframes barSlide {
+  0% { background-position: 200% 0; width: 100%; }
+  100% { background-position: 0% 0; width: 100%; }
 
 .quoteCard {
   cursor: pointer;

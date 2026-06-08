@@ -41,9 +41,16 @@ const Dashboard = () => {
     getMuscleVolumeData
   } = useContext(AppContext);
   const [quoteIdx, setQuoteIdx] = useState(0);
+  const [beastPressed, setBeastPressed] = useState(false);
 
   const rotateQuote = () => {
     setQuoteIdx((prev) => (prev + 1) % quotes.length);
+  };
+
+  const handleBeastToggle = () => {
+    setBeastPressed(true);
+    setTimeout(() => setBeastPressed(false), 300);
+    triggerBeastMode(!beastMode && !beastTimerActive);
   };
 
   const consumedCalories = meals.reduce((sum, m) => sum + (parseFloat(m.calories) || 0), 0);
@@ -85,7 +92,7 @@ const Dashboard = () => {
   const muscleVolume = getMuscleVolumeData(todayStr);
 
   return (
-    <div className={`page-container ${beastTimerActive ? 'countdown-shake' : ''} ${styles.dashboard}`}>
+    <div className={`page-container ${styles.dashboard}`}>
       {/* 5-Second Beast Mode Countdown Overlay */}
       {beastTimerActive && (
         <div className={styles.countdownOverlay}>
@@ -194,25 +201,33 @@ const Dashboard = () => {
         </p>
       </section>
 
-      {/* Beast Mode Activation Toggle */}
-      <section className={`glass-panel ${styles.beastModePanel} ${beastMode ? styles.activeBeast : ''}`} style={{ marginTop: '1rem' }}>
-        <div className={styles.beastToggleHeader}>
-          <div className={styles.beastLabel}>
-            <Swords className={beastMode ? styles.spinning : ''} size={24} />
-            <div>
-              <h3>BEAST MODE</h3>
-              <p>{beastMode ? "ACTIVATED - LIFT HEAVY!" : "DISABLED - TAP TO ENGAGE"}</p>
-            </div>
+      {/* Beast Mode Activation - Premium Power Button */}
+      <section className={`glass-panel ${styles.beastModePanel} ${beastMode ? styles.activeBeast : ''}`}>
+        <div className={styles.beastHeader}>
+          <div className={styles.beastTextBlock}>
+            <span className={styles.beastLabel}>{beastMode ? '⚡ BEAST MODE ON' : 'BEAST MODE'}</span>
+            <p className={styles.beastSub}>{beastMode ? 'Every rep counts. Lift heavy.' : beastTimerActive ? `Activating in ${beastCountdown}...` : 'Tap to ignite your inner beast'}</p>
           </div>
-          <label className={styles.switch}>
-            <input 
-              type="checkbox" 
-              checked={beastMode || beastTimerActive} 
-              onChange={(e) => triggerBeastMode(e.target.checked)} 
-            />
-            <span className={styles.slider}></span>
-          </label>
+
+          {/* Power Button */}
+          <button
+            className={`${styles.powerBtn} ${beastMode ? styles.powerOn : ''} ${beastTimerActive ? styles.powerArming : ''} ${beastPressed ? styles.powerPressed : ''}`}
+            onClick={handleBeastToggle}
+            disabled={beastTimerActive}
+            aria-label="Toggle Beast Mode"
+          >
+            <span className={styles.powerRing1} />
+            <span className={styles.powerRing2} />
+            <Swords size={24} className={styles.powerIcon} />
+          </button>
         </div>
+
+        {/* Active Beast Status Bar */}
+        {beastMode && (
+          <div className={styles.beastActiveBar}>
+            <div className={styles.beastActiveInner} />
+          </div>
+        )}
       </section>
 
       {/* Dynamic Motivation Quotes */}
