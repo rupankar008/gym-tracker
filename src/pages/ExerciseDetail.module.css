@@ -1,19 +1,112 @@
 .detailPage {
-  padding-bottom: 100px; /* Space for Bottom Nav */
+  padding-bottom: 100px;
 }
 
 .header {
   display: flex;
   align-items: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .content {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
+/* ===== REST TIMER OVERLAY ===== */
+.restOverlay {
+  position: fixed;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 999;
+  width: min(340px, 90vw);
+}
+
+.restBox {
+  background: rgba(8, 8, 16, 0.96);
+  border: 1px solid var(--beast-accent);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 0 30px rgba(0, 255, 213, 0.2);
+  backdrop-filter: blur(20px);
+}
+
+.restNum {
+  font-family: var(--font-beast);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--beast-accent);
+  line-height: 1;
+}
+
+.restLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.restBar {
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 255, 213, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 0.25rem 0;
+}
+
+.restBarFill {
+  height: 100%;
+  background: var(--beast-accent);
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+
+/* ===== PR BANNER ===== */
+.prBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  border-left: 4px solid var(--beast-accent);
+  background: linear-gradient(135deg, rgba(0,255,213,0.06) 0%, transparent 100%);
+}
+
+.prLabel {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--beast-accent);
+  letter-spacing: 0.08em;
+  margin-bottom: 0.2rem;
+}
+
+.prVal {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.prVal strong {
+  color: var(--beast-accent);
+}
+
+.prDate {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* ===== TRACKER ===== */
 .trackerPanel {
   display: flex;
   flex-direction: column;
@@ -22,13 +115,16 @@
 
 .trackerPanel h3 {
   margin: 0;
-  color: var(--primary);
-  font-size: 1.1rem;
+  color: var(--beast-primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
 }
 
 .goalsController {
   display: flex;
   gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .controlGroup {
@@ -36,80 +132,178 @@
   align-items: center;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
-  padding: 0.25rem;
+  padding: 0.35rem 0.5rem;
+  gap: 0.25rem;
 }
 
 .controlLabel {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  font-weight: bold;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  margin-right: 0.25rem;
 }
 
 .controlVal {
   font-weight: 700;
   width: 2rem;
   text-align: center;
-  color: var(--primary);
+  color: var(--beast-primary);
 }
 
 .adjustBtn {
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  color: white;
-  width: 24px;
-  height: 24px;
-  border-radius: 4px;
+  background: rgba(255, 69, 0, 0.12);
+  border: 1px solid rgba(255, 69, 0, 0.25);
+  color: var(--beast-primary);
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.adjustBtn:hover {
+  background: var(--beast-primary);
+  color: #fff;
 }
 
 .setBubbles {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
 .setBubble {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 2px solid var(--primary);
+  border: 2px solid rgba(255, 69, 0, 0.4);
   background: transparent;
-  color: var(--primary);
+  color: rgba(255,255,255,0.6);
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s ease;
+  font-size: 0.9rem;
+}
+
+.setBubble:hover {
+  border-color: var(--beast-primary);
+  color: var(--beast-primary);
+  transform: scale(1.05);
 }
 
 .setBubbleDone {
-  background: var(--primary);
-  color: #000;
-  transform: scale(1.1);
+  background: var(--beast-primary);
+  border-color: var(--beast-primary);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(255,69,0,0.4);
+  transform: scale(1.05);
 }
 
 .completedBadge {
-  background: var(--beast-primary);
-  color: #000;
-  padding: 0.5rem;
+  background: linear-gradient(135deg, var(--beast-primary), var(--beast-secondary));
+  color: #fff;
+  padding: 0.6rem;
   border-radius: 8px;
   text-align: center;
-  font-weight: bold;
+  font-weight: 800;
+  font-size: 0.85rem;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  animation: pulse 2s infinite;
+  letter-spacing: 0.04em;
 }
 
+/* Rest Timer Chips */
+.restControls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.restChip {
+  padding: 0.3rem 0.65rem;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.restChip:hover {
+  border-color: var(--beast-accent);
+  color: var(--beast-accent);
+}
+
+.restChipActive {
+  border-color: var(--beast-accent);
+  background: rgba(0, 255, 213, 0.12);
+  color: var(--beast-accent);
+}
+
+/* ===== 1RM PANEL ===== */
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--beast-primary);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.04em;
+}
+
+.ormPanel {
+  display: flex;
+  flex-direction: column;
+  border-left: 4px solid var(--beast-primary);
+}
+
+.ormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.ormInput label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.05em;
+}
+
+.ormResult {
+  margin-top: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 69, 0, 0.08);
+  border: 1px solid rgba(255, 69, 0, 0.25);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.ormResult strong {
+  color: var(--beast-primary);
+  font-size: 1.1rem;
+  font-family: var(--font-beast);
+}
+
+/* ===== INFO PANEL ===== */
 .infoPanel {
   display: flex;
   flex-direction: column;
@@ -118,30 +312,27 @@
 
 .infoRow {
   display: flex;
-  gap: 1rem;
+  gap: 0.875rem;
   align-items: flex-start;
 }
 
 .infoIcon {
-  color: var(--primary);
+  color: var(--beast-primary);
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  margin-top: 0.15rem;
 }
 
 .infoRow h4 {
-  margin: 0 0 0.25rem 0;
-  font-size: 0.9rem;
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
+  font-weight: 800;
+  letter-spacing: 0.06em;
 }
 
 .infoRow p {
   margin: 0;
-  font-size: 0.95rem;
-  line-height: 1.4;
+  font-size: 0.875rem;
+  line-height: 1.5;
   color: var(--text-main);
-}
-
-.addToChartBtn {
-  width: 100%;
-  margin-top: 1rem;
 }

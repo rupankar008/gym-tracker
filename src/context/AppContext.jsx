@@ -78,6 +78,16 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : {};
   });
 
+  const [personalRecords, setPersonalRecords] = useState(() => {
+    const saved = localStorage.getItem('titan_prs');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  const [bodyMeasurements, setBodyMeasurements] = useState(() => {
+    const saved = localStorage.getItem('titan_measurements');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [beastMode, setBeastMode] = useState(false);
   const [beastTimerActive, setBeastTimerActive] = useState(false);
   const [beastCountdown, setBeastCountdown] = useState(5);
@@ -118,6 +128,14 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('titan_supplement_log', JSON.stringify(supplementLog));
   }, [supplementLog]);
+
+  useEffect(() => {
+    localStorage.setItem('titan_prs', JSON.stringify(personalRecords));
+  }, [personalRecords]);
+
+  useEffect(() => {
+    localStorage.setItem('titan_measurements', JSON.stringify(bodyMeasurements));
+  }, [bodyMeasurements]);
 
   const triggerBeastMode = (active) => {
     if (active) {
@@ -255,6 +273,35 @@ export const AppProvider = ({ children }) => {
   const isSupplementTakenToday = (suppId) => {
     const today = new Date().toISOString().split('T')[0];
     return !!(supplementLog[today] && supplementLog[today][suppId]);
+  };
+
+  // --- Personal Records ---
+  const updatePersonalRecord = (exerciseId, exerciseName, weight, reps) => {
+    const estimated1RM = Math.round(weight * (1 + reps / 30));
+    setPersonalRecords(prev => {
+      const existing = prev[exerciseId];
+      if (!existing || estimated1RM > existing.estimated1RM) {
+        return {
+          ...prev,
+          [exerciseId]: {
+            exerciseName,
+            weight,
+            reps,
+            estimated1RM,
+            date: new Date().toISOString().split('T')[0]
+          }
+        };
+      }
+      return prev;
+    });
+  };
+
+  // --- Body Measurements ---
+  const addBodyMeasurement = (entry) => {
+    setBodyMeasurements(prev => [
+      ...prev,
+      { ...entry, date: new Date().toISOString().split('T')[0], id: Date.now() }
+    ]);
   };
 
   // Workout state tracking:
@@ -406,6 +453,10 @@ export const AppProvider = ({ children }) => {
       deleteSupplement,
       toggleSupplementTaken,
       isSupplementTakenToday,
+      personalRecords,
+      updatePersonalRecord,
+      bodyMeasurements,
+      addBodyMeasurement,
     }}>
       {children}
     </AppContext.Provider>
