@@ -36,7 +36,7 @@ const GOAL_FOOD_RECOMMENDATIONS = {
 };
 
 const DietPlan = () => {
-  const { user, meals, addMeal, deleteMeal, targets } = useContext(AppContext);
+  const { user, meals, addMeal, deleteMeal, targets, parseFoodQuery } = useContext(AppContext);
   const [naturalText, setNaturalText] = useState('');
   const [activeGoalTab, setActiveGoalTab] = useState('bulking');
   const [isParsing, setIsParsing] = useState(false);
@@ -110,8 +110,14 @@ Rules:
       const parsed = JSON.parse(text);
       setParseResult({ ...parsed, type: mealType });
     } catch (error) {
-      console.error('Food parse error:', error);
-      setParseError('Could not analyze that food. Try being more specific (e.g. "200g boiled chicken breast").');
+      console.error('Food parse error, falling back to offline DB:', error);
+      const fallback = parseFoodQuery(naturalText, mealType);
+      if (fallback) {
+        setParseResult({ ...fallback, confidence: 'low (offline fallback)' });
+        setParseError('API Error. Used offline estimation.');
+      } else {
+        setParseError('Could not analyze that food. Try being more specific (e.g. "200g boiled chicken breast").');
+      }
     } finally {
       setIsParsing(false);
     }

@@ -70,8 +70,15 @@ const AIAssistant = () => {
 
       setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: reply }]);
     } catch (error) {
-      console.error("AI Error:", error);
-      setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: "ERROR: MY NEURAL UPLINK IS DOWN. CHECK YOUR VITE_GEMINI_API_KEY IN .ENV!" }]);
+      console.error("AI Error, falling back to offline:", error);
+      const fallbacks = [
+        "LIFT HEAVY! YOUR UPLINK TO THE API MIGHT BE DOWN, BUT YOUR MUSCLES AREN'T! (API Key error)",
+        "I CAN'T CONNECT TO THE CLOUD RIGHT NOW. JUST KEEP PUSHING YOUR LIMITS! (API Key error)",
+        "THE MATRIX IS GLITCHING (CHECK YOUR API KEY). UNTIL THEN, STAY HARD AND STAY FOCUSED!",
+        "NO API KEY? NO PROBLEM! REAL BEASTS DON'T NEED AI TO TELL THEM TO SQUAT HEAVIER!"
+      ];
+      const fallbackMsg = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: fallbackMsg }]);
     } finally {
       setIsTyping(false);
     }
