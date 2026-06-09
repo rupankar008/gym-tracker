@@ -306,7 +306,7 @@ export const AppProvider = ({ children }) => {
 
   // Workout state tracking:
   // Toggle set completion (e.g. Set 1, Set 2, Set 3)
-  const toggleExerciseSet = (date, exerciseId, setNum, defaultTargetSets = 4, defaultTargetReps = 10) => {
+  const toggleExerciseSet = (date, exerciseId, setNum, defaultTargetSets = 4, defaultTargetReps = 10, setDetails = null) => {
     setCompletedWorkouts(prev => {
       const dayData = prev[date] || {};
       const exData = dayData[exerciseId] || {
@@ -315,10 +315,21 @@ export const AppProvider = ({ children }) => {
         completedSets: []
       };
 
-      const isCompleted = exData.completedSets.includes(setNum);
-      const updatedSets = isCompleted
-        ? exData.completedSets.filter(num => num !== setNum)
-        : [...exData.completedSets, setNum];
+      // Check if this set is already completed (either by number or object property)
+      const isCompletedIndex = exData.completedSets.findIndex(s => 
+        (typeof s === 'number' ? s === setNum : s.setNum === setNum)
+      );
+      
+      let updatedSets = [...exData.completedSets];
+
+      if (isCompletedIndex >= 0) {
+        // If already completed, remove it (toggle off)
+        updatedSets.splice(isCompletedIndex, 1);
+      } else {
+        // If not completed, add it. If setDetails are provided, add the object, otherwise just add the number (legacy fallback)
+        const newSetEntry = setDetails ? { setNum, ...setDetails } : setNum;
+        updatedSets.push(newSetEntry);
+      }
 
       return {
         ...prev,

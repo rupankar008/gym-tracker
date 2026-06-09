@@ -37,7 +37,7 @@ const TIMING_LABELS = {
   'night': '🌙 NIGHT',
 };
 
-const getSmartTime = (timing, gymTime) => {
+const getSmartTime = (timing, gymTime, durationMins = 60, postDelayMins = 15) => {
   if (!gymTime) return null;
   const [h, m] = gymTime.split(':').map(Number);
   const date = new Date();
@@ -46,7 +46,7 @@ const getSmartTime = (timing, gymTime) => {
   if (timing === 'pre-workout') {
     date.setMinutes(date.getMinutes() - 30);
   } else if (timing === 'post-workout') {
-    date.setMinutes(date.getMinutes() + 15);
+    date.setMinutes(date.getMinutes() + parseInt(durationMins) + parseInt(postDelayMins));
   } else if (timing === 'morning') {
     return '8:00 AM';
   } else if (timing === 'night') {
@@ -58,7 +58,7 @@ const getSmartTime = (timing, gymTime) => {
 };
 
 const Supplements = () => {
-  const { user, supplements, addSupplement, deleteSupplement, toggleSupplementTaken, isSupplementTakenToday } = useContext(AppContext);
+  const { user, updateUser, supplements, addSupplement, deleteSupplement, toggleSupplementTaken, isSupplementTakenToday } = useContext(AppContext);
 
   const [showPresets, setShowPresets] = useState(false);
   const [showCustomForm, setShowCustomForm] = useState(false);
@@ -96,7 +96,7 @@ const Supplements = () => {
       supplements.forEach(supp => {
         if (isSupplementTakenToday(supp.id)) return;
 
-        const smartTime = getSmartTime(supp.timing, user.gymTime);
+        const smartTime = getSmartTime(supp.timing, user.gymTime, user.gymDuration, user.postWorkoutDelay);
         if (!smartTime || smartTime.includes('During')) return;
 
         // Convert to 24h for comparison
@@ -205,6 +205,33 @@ Athlete Profile:
         )}
       </section>
 
+      {/* Settings Section */}
+      <section className={`glass-panel`} style={{ marginBottom: '1rem' }}>
+        <h3 style={{ marginBottom: '0.75rem', fontSize: '0.9rem' }}>TIMING SETTINGS</h3>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>GYM DURATION (MINS)</label>
+            <input 
+              type="number" 
+              className="input-field" 
+              style={{ marginBottom: 0 }}
+              value={user?.gymDuration || 60} 
+              onChange={e => updateUser({ gymDuration: parseInt(e.target.value) || 60 })} 
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>POST-WORKOUT DELAY (MINS)</label>
+            <input 
+              type="number" 
+              className="input-field" 
+              style={{ marginBottom: 0 }}
+              value={user?.postWorkoutDelay || 15} 
+              onChange={e => updateUser({ postWorkoutDelay: parseInt(e.target.value) || 15 })} 
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Notifications Toggle */}
       {!notifGranted && (
         <section className={`glass-panel ${styles.notifCard}`} style={{ borderLeft: '4px solid var(--beast-accent)' }}>
@@ -266,7 +293,7 @@ Athlete Profile:
           <div className={styles.suppList}>
             {supplements.map(supp => {
               const taken = isSupplementTakenToday(supp.id);
-              const smartTime = getSmartTime(supp.timing, user?.gymTime);
+              const smartTime = getSmartTime(supp.timing, user?.gymTime, user?.gymDuration, user?.postWorkoutDelay);
               return (
                 <div key={supp.id} className={`glass-panel ${styles.suppCard} ${taken ? styles.taken : ''}`}>
                   <div className={styles.suppLeft}>

@@ -3,6 +3,7 @@ import { AppContext } from '../context/AppContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { Target, Plus, Trash2, ShieldAlert, Sparkles, Brain, Loader } from 'lucide-react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { RECIPE_LIBRARY } from '../data/recipes';
 import styles from './DietPlan.module.css';
 
 // Initialize Gemini for food analysis
@@ -41,6 +42,7 @@ const DietPlan = () => {
   const [isParsing, setIsParsing] = useState(false);
   const [parseResult, setParseResult] = useState(null);
   const [parseError, setParseError] = useState('');
+  const [activeRecipeTab, setActiveRecipeTab] = useState('snacks');
   
   // Custom manual states
   const [customName, setCustomName] = useState('');
@@ -317,6 +319,47 @@ Rules:
               <div className={styles.presetAction}>
                 <span className={styles.calBadge}>{food.calories} KCAL</span>
                 <button className={styles.quickAddBtn}>+</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Recipe Library Section */}
+      <section className={styles.recipeLibrary} style={{ marginTop: '1.5rem' }}>
+        <h3>RECIPE LIBRARY</h3>
+        <div className={styles.goalTabs}>
+          {Object.keys(RECIPE_LIBRARY).map(tab => (
+            <button
+              key={tab}
+              className={`${styles.tab} ${activeRecipeTab === tab ? styles.activeTab : ''}`}
+              onClick={() => setActiveRecipeTab(tab)}
+            >
+              {tab.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.suggestList}>
+          {RECIPE_LIBRARY[activeRecipeTab].map((recipe, index) => (
+            <div key={index} className={`glass-panel ${styles.presetCard}`} style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-start' }}>
+                <div className={styles.presetMeta}>
+                  <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', margin: 0, fontSize: '0.9rem' }}>
+                    {recipe.name.toUpperCase()}
+                    {recipe.dietType === 'Veg' && <span title="Vegetarian">🟢</span>}
+                    {recipe.dietType === 'Non-Veg' && <span title="Non-Vegetarian">🔴</span>}
+                    {recipe.dietType === 'Vegan' && <span title="Vegan">🌿</span>}
+                  </h4>
+                  <p className="text-muted" style={{ margin: '0.25rem 0 0', fontSize: '0.75rem' }}>P: {recipe.protein}g, C: {recipe.carbs}g, F: {recipe.fats}g | ⏱️ {recipe.prepTime}</p>
+                </div>
+                <div className={styles.presetAction} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+                  <span className={styles.calBadge}>{recipe.calories} KCAL</span>
+                  <button className={styles.quickAddBtn} onClick={() => handleAddPreset(recipe)} style={{ alignSelf: 'flex-end' }}>+</button>
+                </div>
+              </div>
+              <div style={{ marginTop: '0.75rem', fontSize: '0.75rem', color: 'var(--text-main)', background: 'rgba(0,0,0,0.2)', padding: '0.5rem', borderRadius: '4px', width: '100%', lineHeight: '1.4' }}>
+                <strong>Cooking Guide:</strong> {recipe.cookingGuide}
               </div>
             </div>
           ))}

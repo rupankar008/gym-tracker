@@ -19,7 +19,15 @@ const NOTIFICATIONS = [
   { icon: Dumbbell, text: "QUICK MEAL: Try 3 boiled eggs for a quick 18g of protein." },
   { icon: Flame, text: "LIFT HEAVY OR GO HOME! Push your limits today." },
   { icon: Dumbbell, text: "FORM CHECK: Don't let your knees cave in on squats." },
-  { icon: Droplets, text: "RECOVERY: Stretch out those hamstrings tonight!" }
+  { icon: Droplets, text: "RECOVERY: Stretch out those hamstrings tonight!" },
+  { icon: Flame, text: "MOTIVATION: The only bad workout is the one that didn't happen." },
+  { icon: Dumbbell, text: "NUTRITION: Don't forget your post-workout protein within 30 minutes!" },
+  { icon: Droplets, text: "PRO-TIP: Mind-muscle connection is real. Focus on the squeeze!" },
+  { icon: Flame, text: "BEAST MODE: Pain is weakness leaving the body. Keep pushing!" },
+  { icon: Dumbbell, text: "FORM CHECK: Full range of motion builds more muscle." },
+  { icon: Droplets, text: "HYDRATION: Muscles are 70% water. Drink up!" },
+  { icon: Flame, text: "MOTIVATION: Rome wasn't built in a day, but they worked on it every day." },
+  { icon: Dumbbell, text: "NUTRITION: Check the Recipe Library for high-protein snacks!" }
 ];
 
 function AppContent() {

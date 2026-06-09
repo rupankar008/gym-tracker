@@ -37,7 +37,9 @@ const AIAssistant = () => {
 
     try {
       if (API_KEY === "API_KEY_MISSING") {
-        throw new Error("Missing API Key");
+        setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: "ERROR: API KEY MISSING. PLEASE SET VITE_GEMINI_API_KEY IN YOUR .ENV FILE TO ENABLE CHAT AND MACROS." }]);
+        setIsTyping(false);
+        return;
       }
 
       const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
@@ -45,6 +47,7 @@ const AIAssistant = () => {
       const prompt = `
       You are an intense, highly knowledgeable Indian fitness expert and AI Gym Coach named 'Titan'. 
       You speak in an aggressive, motivating, caps-heavy tone (like a hardcore bodybuilder coach).
+      CRITICAL RULE: If the user asks for macros, calories, or nutritional information of any food, you MUST calculate and provide it directly. Do NOT refuse to provide macros.
       The user's name is ${user?.name || 'Warrior'}.
       Their goal is ${user?.goal || 'bulking'}.
       Their weight is ${user?.weight || '70'} kg.
@@ -56,14 +59,14 @@ const AIAssistant = () => {
       
       User says: "${input}"
       
-      Respond directly, intensely, and give factual, actionable fitness/nutrition advice based on their current stats. Keep it under 4-5 sentences. Do not use markdown like ** or ##, just use plain text with CAPS for emphasis.`;
+      Respond directly, intensely, and give factual, actionable fitness/nutrition advice based on their current stats. Calculate macros if requested. Keep it under 4-5 sentences. Do not use markdown like ** or ##, just use plain text with CAPS for emphasis.`;
 
       const result = await model.generateContent(prompt);
       const response = result.response;
       let reply = response.text();
       
       // Clean up markdown just in case
-      reply = reply.replace(/\\*\\*/g, '').replace(/#/g, '');
+      reply = reply.replace(/\*\*/g, '').replace(/#/g, '');
 
       setChatHistory(prev => [...prev, { id: Date.now() + 1, sender: 'ai', text: reply }]);
     } catch (error) {

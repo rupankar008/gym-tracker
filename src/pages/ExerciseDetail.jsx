@@ -59,9 +59,25 @@ const ExerciseDetail = () => {
   const calc1RM = (w, r) => Math.round(parseFloat(w) * (1 + parseInt(r) / 30));
 
   // Handle set complete — auto-start rest
+  const [setInputs, setSetInputs] = useState({});
+
+  const handleSetInputChange = (setNum, field, value) => {
+    setSetInputs(prev => ({
+      ...prev,
+      [setNum]: {
+        ...(prev[setNum] || { weight: '', reps: targetReps, type: 'Normal' }),
+        [field]: value
+      }
+    }));
+  };
+
   const handleSetClick = (setNum) => {
-    toggleExerciseSet(todayStr, exercise.id, setNum, targetSets, targetReps);
-    const wasAlreadyDone = completedSets.includes(setNum);
+    const wasAlreadyDone = completedSets.some(s => (typeof s === 'number' ? s === setNum : s.setNum === setNum));
+    
+    // Pass detailed info to context
+    const details = setInputs[setNum] || { weight: '', reps: targetReps, type: 'Normal' };
+    toggleExerciseSet(todayStr, exercise.id, setNum, targetSets, targetReps, details);
+    
     if (!wasAlreadyDone) startRest();
   };
 
@@ -135,18 +151,63 @@ const ExerciseDetail = () => {
             </div>
           </div>
 
-          <div className={styles.setBubbles}>
+          <div className={styles.setList}>
             {Array.from({ length: targetSets }).map((_, i) => {
               const setNum = i + 1;
-              const isSetDone = completedSets.includes(setNum);
+              const setObj = completedSets.find(s => (typeof s === 'number' ? s === setNum : s.setNum === setNum));
+              const isSetDone = !!setObj;
+              
+              // Load saved data or current input
+              const currentInput = setInputs[setNum] || { weight: '', reps: targetReps, type: 'Normal' };
+              const displayWeight = isSetDone && typeof setObj === 'object' ? setObj.weight : currentInput.weight;
+              const displayReps = isSetDone && typeof setObj === 'object' ? setObj.reps : currentInput.reps;
+              const displayType = isSetDone && typeof setObj === 'object' ? setObj.type : currentInput.type;
+
               return (
-                <button
-                  key={setNum}
-                  className={`${styles.setBubble} ${isSetDone ? styles.setBubbleDone : ''}`}
-                  onClick={() => handleSetClick(setNum)}
-                >
-                  {isSetDone ? <Check size={16} /> : setNum}
-                </button>
+                <div key={setNum} className={`${styles.detailedSetRow} ${isSetDone ? styles.setRowDone : ''}`} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem', alignItems: 'center', background: 'rgba(255,255,255,0.02)', padding: '0.5rem', borderRadius: '8px' }}>
+                  <div style={{ fontWeight: 'bold', width: '40px', textAlign: 'center', color: 'var(--beast-accent)' }}>{setNum}</div>
+                  
+                  <input 
+                    type="number" 
+                    placeholder="kg" 
+                    className="input-field" 
+                    style={{ marginBottom: 0, padding: '0.4rem', flex: 1 }}
+                    value={displayWeight}
+                    onChange={(e) => handleSetInputChange(setNum, 'weight', e.target.value)}
+                    disabled={isSetDone}
+                  />
+                  <span style={{color: 'var(--text-muted)'}}>×</span>
+                  <input 
+                    type="number" 
+                    placeholder="reps" 
+                    className="input-field" 
+                    style={{ marginBottom: 0, padding: '0.4rem', flex: 1 }}
+                    value={displayReps}
+                    onChange={(e) => handleSetInputChange(setNum, 'reps', e.target.value)}
+                    disabled={isSetDone}
+                  />
+                  
+                  <select 
+                    className="input-field" 
+                    style={{ marginBottom: 0, padding: '0.4rem', flex: 1.5, fontSize: '0.8rem' }}
+                    value={displayType}
+                    onChange={(e) => handleSetInputChange(setNum, 'type', e.target.value)}
+                    disabled={isSetDone}
+                  >
+                    <option value="Normal">Normal</option>
+                    <option value="Super">Super Set</option>
+                    <option value="Drop">Drop Set</option>
+                    <option value="Mix">Mix Set</option>
+                  </select>
+
+                  <button
+                    className={`btn ${isSetDone ? 'btn-secondary' : 'btn-primary'}`}
+                    style={{ padding: '0.4rem', minWidth: '40px' }}
+                    onClick={() => handleSetClick(setNum)}
+                  >
+                    {isSetDone ? <Check size={16} /> : <Check size={16} style={{opacity: 0.5}} />}
+                  </button>
+                </div>
               );
             })}
           </div>
